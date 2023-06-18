@@ -16,7 +16,17 @@ int State::evaluate(){
   for(int i = 0; i < BOARD_H; i++){
     for(int j = 0; j < BOARD_W; j++){
       switch(this->board.board[this->player][i][j]){
-        case 1: v_player += 20; break; // pawn
+        case 1: {
+          if(this->player == 0){
+            if(i == 4) v_player += 20;
+            else v_player += 21;
+          }
+          else{
+            if(i == 1) v_player += 20;
+            else v_player += 21;
+          }
+          break;
+        }
         case 2: v_player += 60; break; // rook
         case 3: v_player += 70; break; // knight
         case 4: v_player += 80; break; // bishop
@@ -29,11 +39,11 @@ int State::evaluate(){
   for(int i = 0; i < BOARD_H; i++){
     for(int j = 0; j < BOARD_W; j++){
       switch(this->board.board[1-this->player][i][j]){
-        case 1: v_opponent += 20; break;
-        case 2: v_opponent += 60; break;
-        case 3: v_opponent += 70; break;
-        case 4: v_opponent += 80; break;
-        case 5: v_opponent += 200; break;
+        case 1: v_opponent += 25; break;
+        case 2: v_opponent += 65; break;
+        case 3: v_opponent += 75; break;
+        case 4: v_opponent += 85; break;
+        case 5: v_opponent += 210; break;
         case 6: v_opponent += 20000; break;
         default: v_opponent = v_opponent;
       }
