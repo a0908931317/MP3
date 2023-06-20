@@ -19,11 +19,11 @@ int State::evaluate(){
         case 1: {
           if(this->player == 0){
             if(i == 4) v_player += 20;
-            else v_player += 21;
+            else v_player += 30;
           }
           else{
             if(i == 1) v_player += 20;
-            else v_player += 21;
+            else v_player += 30;
           }
           break;
         }
@@ -34,12 +34,18 @@ int State::evaluate(){
         case 6: v_player += 20000; break; // king
         default: v_player = v_player;
       }
+      if(i == 2 || i == 3){
+        if(this->board.board[this->player][i][j]){
+          if(j == 2) v_player += 5;
+          if(j == 1 || j == 3) v_player += 3;
+        }
+      }
     }
   }
   for(int i = 0; i < BOARD_H; i++){
     for(int j = 0; j < BOARD_W; j++){
       switch(this->board.board[1-this->player][i][j]){
-        case 1: v_opponent += 25; break;
+        case 1: v_opponent += 28; break;
         case 2: v_opponent += 65; break;
         case 3: v_opponent += 75; break;
         case 4: v_opponent += 85; break;

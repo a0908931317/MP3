@@ -2,7 +2,7 @@
 #include <climits>
 
 #include "../state/state.hpp"
-#include "./minimax.hpp"
+#include "./submission.hpp"
 
 
 /**
@@ -12,14 +12,14 @@
  * @param depth You may need this for other policy
  * @return Move 
  */
-Move Minimax::get_move(State *state, int depth){
+Move Submission::get_move(State *state, int depth){
   auto actions = state->legal_actions;
   int best_value = INT_MIN;
-  Move best;
+  Move best = actions[0];
 
   for(size_t i = 0; i < actions.size(); i++){
     State* next = state->next_state(actions[i]);
-    int value = minimax_value(next, depth-1, false);
+    int value = alphabeta_value(next, depth-1, INT_MIN, INT_MAX, state->player);
     if(value > best_value){
         best_value = value;
         best = actions[i];
@@ -29,17 +29,19 @@ Move Minimax::get_move(State *state, int depth){
   return best;
 }
 
-int Minimax::minimax_value(State *state, int depth, bool player){
+int Submission::alphabeta_value(State *state, int depth, int alpha, int beta, int player){
   auto actions = state->legal_actions;
   if(depth == 0){
     if(state->player == player) return state->evaluate();
     else return -state->evaluate();
   }
-  if(player){
+  if(state->player == player){
     int value = INT_MIN;
     for(size_t i = 0; i < actions.size(); i++){
         State* child = state->next_state(actions[i]);
-        value = std::max(value, minimax_value(child, depth-1, false));
+        value = std::max(value, alphabeta_value(child, depth-1, alpha, beta, player));
+        alpha = std::max(alpha, value);
+        if(alpha >= beta) break;
     }
     return value;
   }
@@ -47,7 +49,9 @@ int Minimax::minimax_value(State *state, int depth, bool player){
     int value = INT_MAX;
     for(size_t i = 0; i < actions.size(); i++){
         State* child = state->next_state(actions[i]);
-        value = std::min(value, minimax_value(child, depth-1, true));
+        value = std::min(value, alphabeta_value(child, depth-1, alpha, beta, player));
+        beta = std::min(beta, value);
+        if(beta <= alpha) break;
     }
     return value;
   }

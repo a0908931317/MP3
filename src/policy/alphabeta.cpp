@@ -19,7 +19,7 @@ Move Alphabeta::get_move(State *state, int depth){
 
   for(size_t i = 0; i < actions.size(); i++){
     State* next = state->next_state(actions[i]);
-    int value = alphabeta_value(next, depth-1, INT_MIN, INT_MAX, 1-state->player);
+    int value = alphabeta_value(next, depth-1, INT_MIN, INT_MAX, state->player);
     if(value > best_value){
         best_value = value;
         best = actions[i];
@@ -31,12 +31,16 @@ Move Alphabeta::get_move(State *state, int depth){
 
 int Alphabeta::alphabeta_value(State *state, int depth, int alpha, int beta, int player){
   auto actions = state->legal_actions;
-  if(depth == 0) return state->evaluate();
-  if(depth % 2 == 0){
+  if(depth == 0){
+    if(state->player == player) return state->evaluate();
+    else return -state->evaluate();
+  }
+  if(state->player == player){
     int value = INT_MIN;
     for(size_t i = 0; i < actions.size(); i++){
         State* child = state->next_state(actions[i]);
-        alpha = value = std::max(value, alphabeta_value(child, depth-1, alpha, beta, 1-player));
+        value = std::max(value, alphabeta_value(child, depth-1, alpha, beta, player));
+        alpha = std::max(alpha, value);
         if(alpha >= beta) break;
     }
     return value;
@@ -45,7 +49,8 @@ int Alphabeta::alphabeta_value(State *state, int depth, int alpha, int beta, int
     int value = INT_MAX;
     for(size_t i = 0; i < actions.size(); i++){
         State* child = state->next_state(actions[i]);
-        beta = value = std::min(value, alphabeta_value(child, depth-1, alpha, beta, 1-player));
+        value = std::min(value, alphabeta_value(child, depth-1, alpha, beta, player));
+        beta = std::min(beta, value);
         if(beta <= alpha) break;
     }
     return value;
